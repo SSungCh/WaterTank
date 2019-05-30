@@ -1,0 +1,11 @@
+subplot 211
+load('Matone.mat')
+scatter(stack(:,1),stack(:,2),'.')
+yticks(0:0.05:1)
+ylim([0 1])
+xticks(0:10:110)
+xlim([0 110])
+xlabel('Time X')
+ylabel('Sensor Y')
+title('기본 센서') ;
+grid on

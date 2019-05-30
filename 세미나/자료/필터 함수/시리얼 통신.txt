@@ -1,0 +1,8 @@
+clear all
+delete(instrfindall)
+s=serial('COM11')
+fopen(s)
+time = 0;
+for i= 1:100;
+time = time+1;
+a=str2num(fscanf(s))

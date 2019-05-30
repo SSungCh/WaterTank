@@ -1,0 +1,61 @@
+function  [sens] = watertank(floor,height)
+a=arduino('COM11','Due');
+sensor=height*0.0392+0.1426;
+if(height == 0)
+  writeDigitalPin(a,'D12',0) 
+else
+    tic
+    i  = 0;
+    integral=[0];
+    last_error=0;
+        while(toc<180)
+        i = i + 1;
+        
+        mpx1 = readVoltage(a,'A0');
+        mpx2 = readVoltage(a,'A1');
+        sens2 = mpx1-mpx2
+        sens = readVoltage(a,'A2');
+        if floor == 2
+            [pwm,integral,last_error]=makepwm(sensor,sens,integral,last_error);
+        elseif floor == 1 
+            [pwm,integral,last_error]=makepwm(sensor,sens,integral,last_error);
+        else
+            disp('입력다시해라');
+          
+        end
+        writeDigitalPin(a,'D12',1);
+        writePWMDutyCycle(a,'D13',pwm);
+        figure(1)
+        c(i)=toc;
+        d(i)=pwm;
+        subplot(2,2,1);
+       
+        plot(c,d,'r');
+        title('pwm') ;
+        
+        v(i)=(sens-0.1426)/0.0392;
+        subplot(2,2,2);
+        
+        if floor == 2
+             plot(c,v,'r','color','c');
+        title('2층 센서 높이');
+        elseif floor == 1 
+             plot(c,v,'r');
+        title('2층 센서 높이');
+        end
+        
+        y(i)=(sens2-0.1258)/0.04971;
+        subplot(2,2,4);
+         if floor == 2
+             plot(c,y,'r');
+        title('1층 센서 높이'); 
+             
+        elseif floor == 1 
+                  
+        plot(c,y,'r','color','c');
+        title('1층 센서 높이'); 
+         end
+        end
+end
+end
+

@@ -1,0 +1,96 @@
+function  [sens] = watertank(floor)
+a=arduino('COM11','Due');
+    tic
+    i  = 0;
+    j  = 1;
+    integral=[0];
+    height=1;
+    last_error=0;
+        while(toc<3600)
+        i = i + 1;
+        if j==1
+            height = 10;
+            j=j+1;
+        elseif j == 200
+            height = 15;
+            j=j+1;
+        elseif j == 400
+            height = 20;
+            j=j+1;
+        elseif j >600
+            j=0;
+        else
+            j=j+1;
+        end
+        height
+        j
+        sensor=height*0.0392+0.1426;
+        mpx1 = readVoltage(a,'A0');
+        mpx2 = readVoltage(a,'A1');
+        sens2 = mpx1-mpx2;
+        sens = readVoltage(a,'A2');
+        if floor == 2
+            [pwm,integral,last_error]=makepwm(sensor,sens,integral,last_error);
+        elseif floor == 1 
+            [pwm,integral,last_error]=makepwm(sensor,sens,integral,last_error);
+        else
+            disp('입력다시해라');          
+        end
+       
+        writeDigitalPin(a,'D12',1);
+        writePWMDutyCycle(a,'D13',pwm);
+        figure(1)
+        c(i)=toc;
+        d(i)=pwm;
+        subplot(3,2,1);
+       
+        plot(c,d,'r');
+        grid
+        xlabel('Time X') % x-axis label   
+        ylabel('PWM Y') % y-axis label
+        title('PWM/Time Graph') ;
+        
+        v(i)=(sens-0.1426)/0.0392;
+        subplot(3,2,3);
+        
+        if floor == 2
+             plot(c,v,'r','color','c');
+             h1 = annotation('line');
+             h1.Parent = gca; 
+             h1.X=[0 c(i)];
+             h1.Y=[height height];
+             grid
+        xlabel('Time X') % x-axis label   
+        ylabel('Height Y') % y-axis label
+        title('Height/Time Graph') ;
+        elseif floor == 1 
+             plot(c,v,'r');
+             grid
+        xlabel('Time X') % x-axis label   
+        ylabel('Height Y') % y-axis label
+        title('Height/Time Graph') ;
+        end
+        
+        y(i)=(sens2-0.1258)/0.04971;
+        subplot(3,2,5);
+         if floor == 2
+             plot(c,y,'r');             
+             grid
+        xlabel('Time X') % x-axis label   
+        ylabel('Height Y') % y-axis label
+        title('Height/Time Graph') ; 
+             
+        elseif floor == 1                   
+            plot(c,y,'r','color','c');
+            h1 = annotation('line');
+             h1.Parent = gca; 
+             h1.X=[0 c(i)];
+             h1.Y=[height height];
+        grid
+       xlabel('Time X') % x-axis label   
+        ylabel('Height Y') % y-axis label
+        title('Height/Time Graph') ; 
+         end
+        end
+end
+          

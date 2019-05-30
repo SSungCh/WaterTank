@@ -1,0 +1,7 @@
+ Fs=200;
+        n=5;
+        Wn=30;
+        Fn=Fs/2;
+        ftype='low';
+        [q,w]=butter(n, Wn/Fn, ftype);
+        y=filter(q,w,data)
